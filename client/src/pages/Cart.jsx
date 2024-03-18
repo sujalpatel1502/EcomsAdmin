@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Add, Remove } from "@material-ui/icons";
 import styled from "styled-components";
 import Announcement from "../components/Announcement";
@@ -7,6 +7,9 @@ import Navbar from "../components/Navbar";
 import { useSelector } from 'react-redux';
 import StripeCheckout from 'react-stripe-checkout';
 import axios from "axios"
+import { userRequest } from '../requestMethod';
+import { useNavigate } from 'react-router-dom';
+import { Navigate } from "react-router-dom";
 const Container = styled.div``;
 
 const Wrapper = styled.div`
@@ -150,6 +153,8 @@ const Button = styled.button`
 `;
 const KEY = process.env.REACT_APP_STRIPE;
 const Cart = () => {
+  const cart=useSelector(state=>state.cart)
+  const navigate=useNavigate()
   const [stripeToken,setStripeToken]=useState(null);
   const onToken=async(token)=>{
     
@@ -157,21 +162,22 @@ const Cart = () => {
     setStripeToken(token)
   }
   console.log("stipeeeeeeeeeeeeeee",stripeToken);
-  // useEffect(() => {
-  //   const makeRequest = async () => {
-  //     try {
-  //       const res = await userRequest.post("/checkout/payment", {
-  //         tokenId: stripeToken.id,
-  //         amount: 500,
-  //       });
-  //       history.push("/success", {
-  //         stripeData: res.data,
-  //         products: cart, });
-  //     } catch {}
-  //   };
-  //   stripeToken && makeRequest();
-  // }, [stripeToken, cart.total, history]);
-  const cart=useSelector(state=>state.cart)
+  useEffect(() => {
+    const makeRequest = async () => {
+      try {
+        const res = await userRequest.post("/checkout/payment", {
+          tokenId: stripeToken.id,
+          amount: cart.total*100,
+        });
+        // history.push("/success", {
+        //   stripeData: res.data,
+        //   products: cart, });
+        navigate('/sucess',{state:{data:res.data}});
+      } catch {}
+    };
+    stripeToken && makeRequest();
+  }, [stripeToken, cart.total, navigate]);
+ 
   console.log("cart dataa",cart.quantity);
     return (
         <Container>

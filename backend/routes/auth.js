@@ -23,10 +23,11 @@ router.post("/register", async (req, res) => {
     }
   });
   router.post('/login', async (req, res) => {
+    console.log("reqqqqqq",req.body.username);
     try{
         const user = await User.findOne(
             {
-                userName: req.body.user_name
+              username: req.body.username
             }
         );
         console.log("userrrr",user);
